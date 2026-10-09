@@ -1,0 +1,280 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Androids Deploy Builder</title>
+<style>
+/* Layout: one narrow column, phone first. Form on top, generated terminal block, then a line by line lesson. Light only by choice. */
+:root{
+  --bg:#eef3ef;
+  --panel:#ffffff;
+  --ink:#17241c;
+  --muted:#56675c;
+  --line:#cfdcd3;
+  --accent:#1f7a47;
+  --accent-soft:#dcefe3;
+  --warn:#9a5b00;
+  --warn-soft:#fff2d6;
+  --bad:#a3262a;
+  --bad-soft:#fde3e3;
+  --term:#f7faf8;
+  --display:system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --body:system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --mono:ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+  color-scheme:light;
+}
+html,body{background:var(--bg);color:var(--ink)}
+body{font-family:var(--body);font-size:16px;line-height:1.55}
+.wrap{max-width:720px;margin:0 auto;padding-inline:16px;padding-block:28px 64px;display:flex;flex-direction:column;gap:28px}
+h1{font-family:var(--display);font-weight:800;font-size:clamp(2rem,7vw,2.8rem);line-height:1.05;margin:0;letter-spacing:-0.01em;text-wrap:balance}
+h2{font-family:var(--display);font-weight:600;font-size:1.25rem;margin:0;text-wrap:balance}
+p{margin:0;max-width:65ch}
+.eyebrow{font-family:var(--mono);font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;color:var(--accent)}
+.hero{display:flex;flex-direction:column;gap:10px}
+.hero p{color:var(--muted)}
+.envtag{align-self:flex-start;font-family:var(--mono);font-size:.78rem;background:var(--accent-soft);color:var(--accent);padding:4px 10px;border-radius:4px}
+section{display:flex;flex-direction:column;gap:14px}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:18px;display:flex;flex-direction:column;gap:16px}
+.mode{display:flex;gap:8px;flex-wrap:wrap}
+.mode button{font:inherit;font-size:.95rem;padding:9px 14px;border-radius:6px;border:1px solid var(--line);background:var(--bg);color:var(--ink);cursor:pointer}
+.mode button[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:#ffffff}
+.field{display:flex;flex-direction:column;gap:6px}
+.field label{font-weight:700}
+.field .hint{font-size:.88rem;color:var(--muted)}
+.field input{font-family:var(--mono);font-size:1rem;padding:11px 12px;border-radius:6px;border:1px solid var(--line);background:var(--term);color:var(--ink);min-width:0;width:100%;box-sizing:border-box}
+.field input:focus{outline:2px solid var(--accent);outline-offset:1px}
+.msg{font-size:.88rem;padding:6px 10px;border-radius:5px}
+.msg.warn{background:var(--warn-soft);color:var(--warn)}
+.msg.bad{background:var(--bad-soft);color:var(--bad)}
+.msg.ok{background:var(--accent-soft);color:var(--accent)}
+.termhead{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
+.copy{font:inherit;font-weight:700;padding:10px 18px;border-radius:6px;border:none;background:var(--accent);color:#ffffff;cursor:pointer}
+.copy:focus-visible{outline:2px solid var(--ink);outline-offset:2px}
+pre.term{margin:0;background:var(--term);border:1px solid var(--line);border-radius:8px;padding:14px;overflow-x:auto;font-family:var(--mono);font-size:.86rem;line-height:1.7;color:var(--ink);user-select:all}
+.lesson{display:flex;flex-direction:column;gap:10px}
+.step{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:14px;display:flex;flex-direction:column;gap:6px}
+.step code{font-family:var(--mono);font-size:.86rem;background:var(--accent-soft);color:var(--ink);padding:3px 7px;border-radius:4px;overflow-wrap:anywhere;align-self:flex-start;max-width:100%;box-sizing:border-box}
+.step p{font-size:.95rem;color:var(--ink)}
+.prep p{color:var(--ink)}
+.used{display:flex;flex-wrap:wrap;gap:6px}
+.used span{font-family:var(--mono);font-size:.8rem;background:var(--bg);border:1px solid var(--line);padding:3px 8px;border-radius:4px}
+.small{font:inherit;font-size:.85rem;padding:6px 12px;border-radius:5px;border:1px solid var(--line);background:var(--panel);color:var(--ink);cursor:pointer;align-self:flex-start}
+.foot{font-size:.85rem;color:var(--muted)}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <header class="hero">
+    <span class="eyebrow">androids</span>
+    <h1>Deploy builder for Termux</h1>
+    <p>Your deploy is a fixed template with a few blanks. Fill the blanks below. The page writes the full command block for you. Nothing runs here. You copy the block and paste it into Termux.</p>
+    <span class="envtag">Runs in: Android, Termux</span>
+  </header>
+
+  <section class="prep">
+    <h2>Before you open Termux</h2>
+    <p>In Firefox, force reload the artifact page so you get the newest version. Download the HTML file. Give it a unique name that has never been used before and is not index. That name goes in the download filename box below.</p>
+  </section>
+
+  <section>
+    <h2>Fill the blanks</h2>
+    <div class="panel">
+      <div class="mode" role="group" aria-label="Deploy type">
+        <button type="button" id="modeNew" aria-pressed="true">New project</button>
+        <button type="button" id="modeUpdate" aria-pressed="false">Update existing</button>
+      </div>
+      <p class="hint" id="modeHint" style="color:var(--muted);font-size:.9rem"></p>
+
+      <div class="field">
+        <label for="proj">Project name</label>
+        <span class="hint">Lowercase letters, numbers, and hyphens. This becomes the folder, the repo, and the Vercel project.</span>
+        <input id="proj" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="xxxxxxxx">
+        <div id="projMsg"></div>
+      </div>
+
+      <div class="field">
+        <label for="file">Download filename</label>
+        <span class="hint">The exact name of the file sitting in your Downloads folder. Must end in .html. Never index.</span>
+        <input id="file" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="xxxxxxxx.html">
+        <div id="fileMsg"></div>
+      </div>
+
+      <div class="field">
+        <label for="msg">Commit message</label>
+        <span class="hint">A short note for your history. Say what changed.</span>
+        <input id="msg" autocomplete="off" spellcheck="false">
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="termhead">
+      <h2>Your command block</h2>
+      <button type="button" class="copy" id="copyBtn">Copy block</button>
+    </div>
+    <pre class="term" id="out"></pre>
+    <div id="copyMsg"></div>
+  </section>
+
+  <section>
+    <h2>What each line does</h2>
+    <div class="lesson" id="lesson"></div>
+  </section>
+
+  <section>
+    <h2>Names you have used</h2>
+    <p class="foot">Saved only in this browser. Tap Mark as used after a deploy succeeds. The page warns you if you type one of these again.</p>
+    <div class="used" id="usedList"></div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap">
+      <button type="button" class="small" id="markBtn">Mark as used</button>
+      <button type="button" class="small" id="clearBtn">Clear list</button>
+    </div>
+  </section>
+
+  <p class="foot">Static page. No AI, no server. Everything happens in your browser.</p>
+</div>
+
+<script>
+(function(){
+  var mode = "new";
+  var proj = document.getElementById("proj");
+  var file = document.getElementById("file");
+  var msg = document.getElementById("msg");
+  var out = document.getElementById("out");
+  var lesson = document.getElementById("lesson");
+  var DL = "~/storage/downloads";
+
+  function load(){ try { return JSON.parse(localStorage.getItem("androids_used") || "{}"); } catch(e){ return {}; } }
+  function save(v){ try { localStorage.setItem("androids_used", JSON.stringify(v)); } catch(e){} }
+  var used = load();
+  if(!used.projects) used.projects = [];
+  if(!used.files) used.files = [];
+
+  function note(el, kind, text){
+    el.innerHTML = "";
+    if(!text) return;
+    var d = document.createElement("div");
+    d.className = "msg " + kind;
+    d.textContent = text;
+    el.appendChild(d);
+  }
+
+  function checkProj(v){
+    var el = document.getElementById("projMsg");
+    if(!v){ note(el,"",""); return; }
+    if(!/^[a-z0-9][a-z0-9-]*$/.test(v)){ note(el,"bad","Use only lowercase letters, numbers, and hyphens. No spaces."); return; }
+    if(mode === "new" && used.projects.indexOf(v) !== -1){ note(el,"bad","This name is already used. Pick a new one."); return; }
+    if(mode === "update" && used.projects.indexOf(v) === -1){ note(el,"warn","Update mode expects a folder that already exists. Check the name."); return; }
+    note(el,"ok","Looks good.");
+  }
+
+  function checkFile(v){
+    var el = document.getElementById("fileMsg");
+    if(!v){ note(el,"",""); return; }
+    var base = v.replace(/\.html$/i,"").toLowerCase();
+    if(base === "index" || /^index[^a-z0-9]/i.test(v)){ note(el,"bad","Never use index for the download. Pick a unique name."); return; }
+    if(!/\.html$/i.test(v)){ note(el,"warn","The file should end in .html."); return; }
+    if(/\s/.test(v)){ note(el,"bad","No spaces. Spaces break the mv command."); return; }
+    if(used.files.indexOf(v) !== -1){ note(el,"bad","This filename was used before. Rename the download."); return; }
+    note(el,"ok","Looks good.");
+  }
+
+  function steps(p, f, m){
+    var q = m.replace(/"/g,"'");
+    var s = [
+      {c:"cd ~", w:"Go to your home folder. Every deploy starts from the same known spot."},
+      {c:"pwd", w:"Print where you are. It should end in /home. If not, stop and run cd ~ again."}
+    ];
+    if(mode === "new"){
+      s.push({c:"mkdir -p " + DL + "/" + p, w:"Make the project folder inside Downloads. The -p flag means no error if it already exists."});
+    }
+    s.push({c:"mv " + DL + "/" + f + " " + DL + "/" + p + "/index.html", w:"Move your unique download into the project folder and rename it to index.html in one step. Vercel serves index.html as the home page."});
+    s.push({c:"cd " + DL + "/" + p, w:"Step inside the project folder. Git and Vercel act on whatever folder you are in."});
+    s.push({c:"pwd", w:"Check again. It should end in /" + p + ". If it shows anything else, stop."});
+    if(mode === "new"){
+      s.push({c:"git init", w:"Turn this folder into a git repository so it can track changes."});
+    }
+    s.push({c:"git add .", w:"Stage every file in this folder. The dot means here."});
+    s.push({c:"git commit -m \"" + q + "\"", w:"Save a snapshot with your note attached."});
+    if(mode === "new"){
+      s.push({c:"gh repo create " + p + " --public --source=. --remote=origin --push", w:"Create the repo on GitHub from this folder, link it as origin, and upload the snapshot."});
+    } else {
+      s.push({c:"git push", w:"Upload the new snapshot to the GitHub repo that already exists."});
+    }
+    s.push({c:"vercel --prod", w: mode === "new" ? "Publish to Vercel. The first time, it asks a few setup questions. Accept the defaults. When it prints your live URL, save it." : "Publish the update to the same Vercel project and URL."});
+    return s;
+  }
+
+  function render(){
+    var p = proj.value.trim() || "xxxxxxxx";
+    var f = file.value.trim() || "xxxxxxxx.html";
+    var m = msg.value.trim() || (mode === "new" ? "first deploy" : "update");
+    var s = steps(p, f, m);
+    out.textContent = s.map(function(x){ return x.c; }).join("\n");
+    lesson.innerHTML = "";
+    s.forEach(function(x){
+      var d = document.createElement("div"); d.className = "step";
+      var c = document.createElement("code"); c.textContent = x.c;
+      var t = document.createElement("p"); t.textContent = x.w;
+      d.appendChild(c); d.appendChild(t); lesson.appendChild(d);
+    });
+    checkProj(proj.value.trim());
+    checkFile(file.value.trim());
+  }
+
+  function setMode(v){
+    mode = v;
+    document.getElementById("modeNew").setAttribute("aria-pressed", v === "new");
+    document.getElementById("modeUpdate").setAttribute("aria-pressed", v === "update");
+    document.getElementById("modeHint").textContent = v === "new"
+      ? "New project: makes the folder, the repo, and the Vercel project from scratch."
+      : "Update existing: swaps in a new file and republishes. Same folder, same repo, same URL.";
+    msg.placeholder = v === "new" ? "first deploy" : "update";
+    render();
+  }
+
+  function renderUsed(){
+    var el = document.getElementById("usedList");
+    el.innerHTML = "";
+    var all = used.projects.map(function(x){return "project: " + x;}).concat(used.files.map(function(x){return "file: " + x;}));
+    if(!all.length){ var e = document.createElement("span"); e.textContent = "none yet"; el.appendChild(e); return; }
+    all.forEach(function(x){ var s = document.createElement("span"); s.textContent = x; el.appendChild(s); });
+  }
+
+  document.getElementById("modeNew").addEventListener("click", function(){ setMode("new"); });
+  document.getElementById("modeUpdate").addEventListener("click", function(){ setMode("update"); });
+  [proj, file, msg].forEach(function(i){ i.addEventListener("input", render); });
+
+  document.getElementById("copyBtn").addEventListener("click", function(){
+    var t = out.textContent;
+    var cm = document.getElementById("copyMsg");
+    function fallback(){
+      var r = document.createRange(); r.selectNodeContents(out);
+      var sel = window.getSelection(); sel.removeAllRanges(); sel.addRange(r);
+      note(cm,"warn","Copy was blocked. The block is selected. Long press and choose Copy.");
+    }
+    try {
+      navigator.clipboard.writeText(t).then(function(){ note(cm,"ok","Copied. Paste it into Termux."); }, fallback);
+    } catch(e){ fallback(); }
+  });
+
+  document.getElementById("markBtn").addEventListener("click", function(){
+    var p = proj.value.trim(), f = file.value.trim();
+    if(p && used.projects.indexOf(p) === -1) used.projects.push(p);
+    if(f && used.files.indexOf(f) === -1) used.files.push(f);
+    save(used); renderUsed(); render();
+  });
+  document.getElementById("clearBtn").addEventListener("click", function(){
+    used = {projects:[], files:[]}; save(used); renderUsed(); render();
+  });
+
+  renderUsed();
+  setMode("new");
+})();
+</script>
+
+</body>
+</html>
